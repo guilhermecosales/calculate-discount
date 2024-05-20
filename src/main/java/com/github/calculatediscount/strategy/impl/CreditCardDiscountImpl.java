@@ -14,6 +14,10 @@ public class CreditCardDiscountImpl implements PaymentDiscountStrategy {
 
     @Override
     public BigDecimal applyDiscount(DiscountRequest request) {
+        if (isPaymentInInstallment(request.installments())) {
+            return request.amount();
+        }
+
         BigDecimal amount = request.amount();
         return amount.subtract(amount.multiply(DISCOUNT));
     }
@@ -21,6 +25,10 @@ public class CreditCardDiscountImpl implements PaymentDiscountStrategy {
     @Override
     public boolean isApplicable(PaymentType paymentType) {
         return paymentType == PaymentType.CREDIT_CARD;
+    }
+
+    private boolean isPaymentInInstallment(Integer installments) {
+        return installments != null && installments <= 1;
     }
 
 }
